@@ -20,10 +20,15 @@ contract LotteryHash is VRFConsumerBase, Ownable {
     uint256 public entryFee;
     uint256 public gameId;
 
-	// events
-	event GameStarted(uint256 gameId, uint256 entryFee, uint8 maxPlayers);
-	event PlayerJoined(uint256 gameId, address player);
-	event GameEnded(uint256 gameId, address winner, uint256 prize, bytes32 requestId);
+    // events
+    event GameStarted(uint256 gameId, uint256 entryFee, uint8 maxPlayers);
+    event PlayerJoined(uint256 gameId, address player);
+    event GameEnded(
+        uint256 gameId,
+        address winner,
+        uint256 prize,
+        bytes32 requestId
+    );
 
     constructor(
         address _vrfCoordinator,
@@ -33,49 +38,51 @@ contract LotteryHash is VRFConsumerBase, Ownable {
     ) VRFConsumerBase(_vrfCoordinator, _linkToken) {
         fee = _vrfFee;
         keyHash = _vrfKeyHash;
-		gameStarted = false;
+        gameStarted = false;
     }
 
-	function startGame(uint256 _entryFee, uint8 _maxPlayers) public onlyOwner {
-		require(!gameStarted, "GAME_CURRENTLY_RUNNING");
-		delete players;
-		gameStarted = true;
-		entryFee = _entryFee;
-		maxPlayers = _maxPlayers;
-		gameId++;
+    function startGame(uint256 _entryFee, uint8 _maxPlayers) public onlyOwner {
+        require(!gameStarted, "GAME_CURRENTLY_RUNNING");
+        delete players;
+        gameStarted = true;
+        entryFee = _entryFee;
+        maxPlayers = _maxPlayers;
+        gameId++;
 
-		emit GameStarted(gameId, entryFee, maxPlayers);
-	}
+        emit GameStarted(gameId, entryFee, maxPlayers);
+    }
 
-	function joinGame() public payable {
-		require(gameStarted, "GAME_NOT_STARTED");
-		require(msg.value >= entryFee, "NOT_ENOUGH_STAKE");
-		require(players.length < maxPlayers, "MAX_PLAYERS_REACHED");
+    function joinGame() public payable {
+        require(gameStarted, "GAME_NOT_STARTED");
+        require(msg.value >= entryFee, "NOT_ENOUGH_STAKE");
+        require(players.length < maxPlayers, "MAX_PLAYERS_REACHED");
 
-		players.push(msg.sender);
-		emit PlayerJoined(gameId, msg.sender);
-		if (players.length == maxPlayers) {
-			getRandomWinner();
-		}
-	}
+        players.push(msg.sender);
+        emit PlayerJoined(gameId, msg.sender);
+        if (players.length == maxPlayers) {
+            getRandomWinner();
+        }
+    }
 
-	function fulfillRandomness(bytes32 requestId, uint256 randomness) internal override {
-		uint256 winnerIndex = randomness % players.length;
-		address winner = players[winnerIndex];
-		(bool sent, ) = winner.call{ value: address(this).balance }("");
+    function fulfillRandomness(bytes32 requestId, uint256 randomness)
+        internal
+        override
+    {
+        uint256 winnerIndex = randomness % players.length;
+        address winner = players[winnerIndex];
+        (bool sent, ) = winner.call{value: address(this).balance}("");
 
-		emit GameEnded(gameId, winner, address(this).balance, requestId);
-		require(sent, "FAILED_TO_SEND_REWARD");
-		gameStarted = false;
-	}
+        emit GameEnded(gameId, winner, address(this).balance, requestId);
+        require(sent, "FAILED_TO_SEND_REWARD");
+        gameStarted = false;
+    }
 
-	function getRandomWinner() private returns(bytes32 requestId) {
-		require(LINK.balanceOf(address(this)) >= fee, "NOT_ENOUGH_LINK");
-		return requestRandomness(keyHash, fee);
-	}
+    function getRandomWinner() private returns (bytes32 requestId) {
+        require(LINK.balanceOf(address(this)) >= fee, "NOT_ENOUGH_LINK");
+        return requestRandomness(keyHash, fee);
+    }
 
-	receive() external payable {}
+    receive() external payable {}
 
-	fallback() external payable {}
-
+    fallback() external payable {}
 }
