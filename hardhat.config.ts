@@ -15,8 +15,8 @@ dotenv.config();
 const config: HardhatUserConfig = {
   solidity: "0.8.4",
   networks: {
-    fuji: {
-      url: process.env.FUJI_URL || "",
+    mumbai: {
+      url: process.env.MUMBAI_URL || "",
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
@@ -26,7 +26,7 @@ const config: HardhatUserConfig = {
     currency: "USD",
   },
   etherscan: {
-    apiKey: process.env.SNOWTRACE_API_KEY,
+    apiKey: process.env.POLYGONSCAN_API_KEY,
   },
 };
 

@@ -8,14 +8,14 @@ const delayBy = async (seconds: number) => {
 const main = async () => {
   const lotteryHashFactory = await ethers.getContractFactory("LotteryHash");
 
-  /* these constants are gotten from https://docs.chain.link/docs/vrf-contracts/
-   * the ones highlighted below are for the avalanche FUJI testnet
+  /* these constants are gotten from https://docs.chain.link/docs/vrf-contracts/v1/
+   * the ones highlighted below are for the MUMBAI testnet
    */
-  const VRF_COORDINATOR = "0x2eD832Ba664535e5886b75D64C46EB9a228C2610";
-  const LINK_TOKEN = "0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846";
-  const PREMIUM: BigNumber = ethers.utils.parseEther("0.005");
+  const VRF_COORDINATOR = "0x8C7382F9D8f56b33781fE506E897a4F1e2d17255";
+  const LINK_TOKEN = "0x326C977E6efc84E512bB9C30f76E30c160eD06FB";
+  const PREMIUM: BigNumber = ethers.utils.parseEther("0.0001");
   const VRF_KEY_HASH =
-    "0x354d2f95da55398f44b7cff77da56283d9c6c829a4bdf1bbcaf2ad6a4d081f61";
+    "0x6e75b569a01ef56d18cab6a8e71e6600d6ce853834d4a5748b720d06f878b3a4";
   const LotteryHash = await lotteryHashFactory.deploy(
     VRF_COORDINATOR,
     LINK_TOKEN,
@@ -27,7 +27,7 @@ const main = async () => {
 
   const delayTime = 60;
   console.log(
-    `Wating for ${delayTime} secons for SnowTrace to index LotteryHash bytecode :)`
+    `Wating for ${delayTime} secons for PolygonScan to index LotteryHash bytecode :)`
   );
   await delayBy(delayTime);
 

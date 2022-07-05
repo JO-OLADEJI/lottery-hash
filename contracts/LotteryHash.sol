@@ -70,9 +70,9 @@ contract LotteryHash is VRFConsumerBase, Ownable {
     {
         uint256 winnerIndex = randomness % players.length;
         address winner = players[winnerIndex];
-        (bool sent, ) = winner.call{value: address(this).balance}("");
-
         emit GameEnded(gameId, winner, address(this).balance, requestId);
+
+        (bool sent, ) = winner.call{value: address(this).balance}("");
         require(sent, "FAILED_TO_SEND_REWARD");
         gameStarted = false;
     }
