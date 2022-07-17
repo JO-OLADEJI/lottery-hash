@@ -1,0 +1,8 @@
+type Game @entity(immutable: true) {
+  id: ID!
+  entryFee: BigInt!
+  maxPlayers: Int!
+  players: [Bytes!]!
+  winner: Bytes
+  requestId: Bytes
+}

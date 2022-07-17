@@ -1,0 +1,33 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: LotteryHash
+    network: mumbai
+    source:
+      address: "0xAA7ACbc4C721B782fa50faa5c58716e5982c9aCE"
+      abi: LotteryHash
+      startBlock: 27057904
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - GameEnded
+        - GameStarted
+        - OwnershipTransferred
+        - PlayerJoined
+      abis:
+        - name: LotteryHash
+          file: ./abis/LotteryHash.json
+      eventHandlers:
+        - event: GameEnded(uint256,address,uint256,bytes32)
+          handler: handleGameEnded
+        - event: GameStarted(uint256,uint256,uint8)
+          handler: handleGameStarted
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: PlayerJoined(uint256,address)
+          handler: handlePlayerJoined
+      file: ./src/lottery-hash.ts
