@@ -1,4 +1,4 @@
-type Game @entity(immutable: true) {
+type Game @entity {
   id: ID!
   entryFee: BigInt!
   maxPlayers: Int!
